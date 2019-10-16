@@ -26,6 +26,12 @@ require(yaml)
 
 load(file.path(base.path,"model.RData"))
 
+age_label <- c("[15,20)","[20,25)","[25,30)","[30,35)","[35,40)","[40,45)","[45,49]")
+
+newdata <- model$model%>% rename(agegroup=`as.factor(agegroup)`,corr2=`abs(corr2)`) %>% group_by(agegroup) %>% summarise_all(funs(mean)) %>% ungroup %>% mutate(age_label=age_label[agegroup])
+
+newdata2 <- model$model%>% rename(agegroup=`as.factor(agegroup)`,corr2=`abs(corr2)`) %>% group_by(agegroup) %>% summarise_all(funs(median)) %>% ungroup %>% mutate(age_label=age_label[agegroup])
+
 shinyApp(
   
   fluidPage(
@@ -42,7 +48,7 @@ shinyApp(
     
     
     
-    values <- callModule(predictionTable, "myPredictionTable", model, vals$newdata)
+    values <- callModule(predictionTable, "myPredictionTable", model, reactive(vals$newdata))
     
     
     observeEvent(input$change_things,{
