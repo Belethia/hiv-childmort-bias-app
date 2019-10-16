@@ -93,7 +93,7 @@ predictionTable <- function(input,output,session,model,x,boot_models,model.formu
     prediction %>% flextable() %>% 
       add_footer(agegroup="Values in parenthesis are 95% prediction intervals.") %>%
       merge_at(j=1:ncol(prediction),part="footer") %>%
-      set_header_labels(agegroup="Age Group") %>%
+      set_header_labels(agegroup="Age Group",Output="Corrected U5M") %>%
       width(width=2)%>%
       height(height = 0.75,part = "body")%>%
       height(height = 0.75,part = "header")%>%

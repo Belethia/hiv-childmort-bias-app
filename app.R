@@ -24,7 +24,9 @@ ui <- fluidPage(
   mainPanel(
     
     column(width=12,
-           tags$h1("Population Characteristics"),
+           tags$h1("Correct bias in indirect estimates of under-5 mortality due to HIV/AIDS"),
+           tags$p("This webpage allows the user to apply the method described in Quattrochi et al. 2019 Measuring and correcting bias in indirect estimates of under-5 mortality in populations
+affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the crude indirect estimates of under-5 mortality and the population characteristics listed below. The time reference for each of the corrected estimates is the same as for the crude estimates."),
            wellPanel(
              fluidRow(
                fluidRow(column(3,tags$h3("HIV prevalence"))),
@@ -34,7 +36,7 @@ ui <- fluidPage(
                                      "20 years prior to survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
@@ -44,7 +46,7 @@ ui <- fluidPage(
                                      "10 years prior to survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
@@ -54,7 +56,7 @@ ui <- fluidPage(
                                      "Year of survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
@@ -66,30 +68,30 @@ ui <- fluidPage(
                fluidRow(
                  column(width=3,
                         numericInput("art_prev2005",
-                                     "2005:",
+                                     "Five years before the survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
                  ),
                  column(width=3,
                         numericInput("art_prev2007",
-                                     "2007:",
+                                     "Three years before the survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
                  ),
                  column(width=3,
                         numericInput("art_prev2009",
-                                     "2009:",
+                                     "One year before the survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
@@ -108,7 +110,7 @@ ui <- fluidPage(
                                      "10 years prior to survey:",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
@@ -118,7 +120,7 @@ ui <- fluidPage(
                                      "Year of survey",
                                      min = 0,
                                      max = 1,
-                                     value = 0.5,
+                                     value = NA,
                                      step=0.05,
                                      width='175px'
                         )
@@ -138,7 +140,7 @@ ui <- fluidPage(
                                               "15-19 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -148,7 +150,7 @@ ui <- fluidPage(
                                               "20-24 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -158,7 +160,7 @@ ui <- fluidPage(
                                               "25-29 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -168,7 +170,7 @@ ui <- fluidPage(
                                               "30-34 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -181,7 +183,7 @@ ui <- fluidPage(
                                               "35-39 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -191,7 +193,7 @@ ui <- fluidPage(
                                               "40-45 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -201,7 +203,7 @@ ui <- fluidPage(
                                               "45-49 year old women",
                                               min = 0,
                                               max = 1,
-                                              value = 0.5,
+                                              value = NA,
                                               step=0.05,
                                               width='175px'
                                  )
@@ -220,7 +222,7 @@ ui <- fluidPage(
     column(width=12,
            fluidRow(column(12,tags$h1("Corrected estimates of U5M"))),
            fluidRow(
-             column(4,
+             column(8,
                     wellPanel(style = "background: white",
                               fluidRow(
                                 predictionTableUI("myPredictionTable")
@@ -238,14 +240,38 @@ server <- function(input, output) {
   
   observeEvent(input$compute,{
     
-    age_label <- c("[15,20)","[20,25)","[25,30)","[30,35)","[35,40)","[40,45)","[45,49]")
+    checks <- c(fiveq0_surv_1="Under-5 mortality for 15-19 year old women is missing.",
+                fiveq0_surv_2="Under-5 mortality for 20-24 year old women is missing.",
+                fiveq0_surv_3="Under-5 mortality for 25-29 year old women is missing.",
+                fiveq0_surv_4="Under-5 mortality for 30-34 year old women is missing.",
+                fiveq0_surv_5="Under-5 mortality for 35-39 year old women is missing.",
+                fiveq0_surv_6="Under-5 mortality for 40-44 year old women is missing.",
+                fiveq0_surv_7="Under-5 mortality for 45-49 year old women is missing.",
+                hiv1990="HIV prevalence 20 years prior to survey is missing.",
+                hiv2000="HIV prevalence 10 years prior to survey is missing.",
+                hiv2010="HIV prevalence on the year of the survey is missing."
+                
+    )
     
-    fiveq0_surv <- as.numeric(c(input$fiveq0_surv_1,input$fiveq0_surv_2,input$fiveq0_surv_3,input$fiveq0_surv_4,input$fiveq0_surv_5,input$fiveq0_surv_6,input$fiveq0_surv_7))
+    all_inputs_filled <- names(checks) %>% map(~{
+      
+      valid<- !is.na(input[[.x]])
+      
+      if(!valid) showNotification(checks[.x])
+      
+      valid
+      
+    }) %>% unlist() %>% all
     
-    newdata <- data.frame(agegroup=factor(1:7),fiveq0_surv=fiveq0_surv,hiv1990=input$hiv1990,hiv2000=input$hiv2000,hiv2010=input$hiv2010,art_prev2005=input$art_prev2005,art_prev2007=input$art_prev2007,art_prev2009=input$art_prev2009,tfr2000=input$tfr2000,tfr2010=input$tfr2010,age_label=age_label)
-    
-    callModule(predictionTable, "myPredictionTable", best.fitting.model,x,boot_models,full.model.formula, newdata)  
-    
+    if(all_inputs_filled){
+      age_label <- c("[15,20)","[20,25)","[25,30)","[30,35)","[35,40)","[40,45)","[45,49]")
+      
+      fiveq0_surv <- as.numeric(c(input$fiveq0_surv_1,input$fiveq0_surv_2,input$fiveq0_surv_3,input$fiveq0_surv_4,input$fiveq0_surv_5,input$fiveq0_surv_6,input$fiveq0_surv_7))
+      
+      newdata <- data.frame(agegroup=factor(1:7),fiveq0_surv=fiveq0_surv,hiv1990=input$hiv1990,hiv2000=input$hiv2000,hiv2010=input$hiv2010,art_prev2005=input$art_prev2005,art_prev2007=input$art_prev2007,art_prev2009=input$art_prev2009,tfr2000=input$tfr2000,tfr2010=input$tfr2010,age_label=age_label)
+      
+      callModule(predictionTable, "myPredictionTable", best.fitting.model,x,boot_models,full.model.formula, newdata)  
+    }
   })
   
   
