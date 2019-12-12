@@ -24,12 +24,13 @@ ui <- fluidPage(
   mainPanel(
     
     column(width=12,
-           tags$h1("Correct bias in indirect estimates of under-5 mortality due to HIV/AIDS"),
+           tags$h1(tags$a(href="https://bmcpublichealth.biomedcentral.com/articles/10.1186/s12889-019-7780-3","Correct bias in indirect estimates of under-5 mortality due to HIV/AIDS")),
            tags$p("This webpage allows the user to apply the method described in Quattrochi et al. 2019 Measuring and correcting bias in indirect estimates of under-5 mortality in populations
-affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the crude indirect estimates of under-5 mortality and the population characteristics listed below. The time reference for each of the corrected estimates is the same as for the crude estimates."),
+affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the crude indirect estimates of under-5 mortality and the population characteristics listed below. The time reference for each of the corrected estimates is the same as for the crude estimates. The full code is available here: ", 
+                  tags$a(href="https://github.com/jquattro/hiv-childmort-bias","https://github.com/jquattro/hiv-childmort-bias")),
            wellPanel(
              fluidRow(
-               fluidRow(column(3,tags$h3("HIV prevalence"))),
+               fluidRow(column(12,tags$h3("HIV prevalence"),tags$p("Please enter the prevalence as a proportion. For example, 10% prevalence should be entered as 0.1."))),
                fluidRow(
                  column(3,
                         numericInput("hiv1990",
@@ -64,11 +65,11 @@ affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the cru
                )
              ),
              fluidRow(
-               fluidRow(column(width=12,tags$h3("ART prevalence*"))),
+               fluidRow(column(width=12,tags$h3("ART prevalence*"),tags$p("Please enter the prevalence as a proportion. For example, 10% prevalence should be entered as 0.1."))),
                fluidRow(
                  column(width=3,
                         numericInput("art_prev2005",
-                                     "Five years before the survey:",
+                                     "5 years before the survey:",
                                      min = 0,
                                      max = 1,
                                      value = NA,
@@ -78,7 +79,7 @@ affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the cru
                  ),
                  column(width=3,
                         numericInput("art_prev2007",
-                                     "Three years before the survey:",
+                                     "3 years before the survey:",
                                      min = 0,
                                      max = 1,
                                      value = NA,
@@ -88,7 +89,7 @@ affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the cru
                  ),
                  column(width=3,
                         numericInput("art_prev2009",
-                                     "One year before the survey:",
+                                     "1 year before the survey:",
                                      min = 0,
                                      max = 1,
                                      value = NA,
@@ -130,7 +131,7 @@ affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the cru
              ),
              
              fluidRow(
-               fluidRow(column(12,tags$h3("Under-5 mortality**"))),
+               fluidRow(column(12,tags$h3("Under-5 mortality**"),tags$p("Please enter the mortality rate as a proportion. For example, 100 deaths per 1,000 live births should be entered as 0.1."))),
                column(12,
                       
                       fluidRow(
@@ -213,7 +214,7 @@ affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the cru
                )
              ),
              tags$p("*ART prevalence: Percent of women aged 15-49 years who are on anti-retorviral therapy"),
-             tags$p("** Crude estimate of under-5 mortality for all age groups")
+             tags$p("** Crude estimate of under-5 mortality for all age groups.")
            ),
            actionButton("compute","Submit",style="color: #fff; background-color: #982C25; border-color: #000000"),
            tags$p("Please allow 1-2 minutes for predictions to appear while bootstrapped estimates of uncertainty are calculated.")
@@ -231,7 +232,10 @@ affected by HIV/AIDS: a simulation study. BMC Public Health. It requires the cru
              )
            )
            
-    )
+    ),
+      tags$p(style="font-size: 10px;font-style: italic;",
+        "This page was created by ",tags$a(href="https://www.linkedin.com/in/jlherreracortijo","Juan Luis Herrera Cortijo")," and John Quattrochi.")
+    
   ) 
 )
 

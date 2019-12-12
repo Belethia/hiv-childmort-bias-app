@@ -60,6 +60,7 @@ predictionTable <- function(input,output,session,model,x,boot_models,model.formu
     withProgress(message = 'Computing...', value = 0, {
       prediction <- lapply(1:7,function(i){
         # i<- 1
+        
         nx <- to.predict[i,,drop=FALSE]
         t0 <- predict(model,newx = nx,s="lambda.min") %>% as.vector
         tt <- boot_models %>%purrr::map(~predict(.,newx = nx,s="lambda.min") %>% as.vector) %>% unlist()
@@ -91,7 +92,7 @@ predictionTable <- function(input,output,session,model,x,boot_models,model.formu
       select(agegroup,Output)
     
     prediction %>% flextable() %>% 
-      add_footer(agegroup="Values in parenthesis are 95% prediction intervals.") %>%
+      add_footer(agegroup="Values in parenthesis are 95% prediction intervals.\nThey may be quite narrow due to the large simulation dataset.") %>%
       merge_at(j=1:ncol(prediction),part="footer") %>%
       set_header_labels(agegroup="Age Group",Output="Corrected U5M") %>%
       width(width=2)%>%
